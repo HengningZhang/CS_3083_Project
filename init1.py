@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                       port = 8889,
+                       port = 3306,
                        user='root',
-                       password='root',
+                       password="",
                        db='finstagram1',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -200,7 +200,10 @@ def manageFollow():
     cursor.execute(query,(username))
     data=cursor.fetchall()
     cursor.close()
-    return render_template("manageFollower.html",requests=data)
+    if not data:
+        return render_template("noRequests.html")
+    else:
+        return render_template("manageFollower.html",requests=data)
 
 @app.route("/acceptFollow")
 def acceptFollow():
