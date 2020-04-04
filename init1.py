@@ -110,7 +110,10 @@ def home():
     # cursor.close()
     return render_template('home.html', username=username ,posts=data)
 
-        
+@app.route('/goToPost')
+def goToPost():
+    username = session['username']
+    return render_template('posting.html',username=username)    
 @app.route('/post', methods=['GET', 'POST'])
 def post():
     username = session['username']
@@ -230,7 +233,21 @@ def rejectFollow():
     cursor.execute(query,(username,toAccept))
     cursor.close()
     return redirect(url_for('manageFollow'))
-    
+@app.route('/comment')
+def comment():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    toComment = request.args['selected']
+    commentContent=request.args['commentContent']
+    cursor=conn.cursor()
+    query="INSERT INTO reactto(username,pID,reactionTime,comment) VALUES(%s,%s,%s,%s)"
+    now=datetime.datetime.now()
+    now.strftime("%D,%H:%M:%S")
+    cursor.execute(query,(username,toComment,now,commentContent))
+    cursor.close()
+    return redirect(url_for('home'))
 @app.route('/logout')
 def logout():
     session.pop('username')
