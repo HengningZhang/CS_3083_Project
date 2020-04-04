@@ -27,7 +27,7 @@ CREATE TABLE block(
         PRIMARY KEY (blocker,blockee),
         FOREIGN KEY (blocker) REFERENCES Person (username),
         FOREIGN KEY (blockee) REFERENCES Person (username)
-)
+);
 
 CREATE TABLE FriendGroup (
         groupName VARCHAR(32),
