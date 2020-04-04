@@ -151,6 +151,7 @@ def follow():
     cursor.execute(query, (username,toFollow))
     cursor.close()
     return redirect(url_for('discover'))
+
 @app.route("/viewable_photos",methods=["GET"])
 def viewable_photos():
     try:
@@ -221,3 +222,5 @@ app.secret_key = 'some key that you will never guess'
 #for changes to go through, TURN OFF FOR PRODUCTION
 if __name__ == "__main__":
     app.run('127.0.0.1', 5000, debug = True)
+
+#//////////
