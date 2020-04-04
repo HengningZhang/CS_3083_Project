@@ -1,0 +1,32 @@
+<html>
+<head>
+</head>
+<body>
+
+
+Manage your follow requests!
+<br>
+
+<!-- <form action="/acceptFollow" method="GET"> -->
+<form>
+
+
+{% for line in requests %}
+<input type="radio" name="requests" value={{line.follower}}>{{line.follower}}</input>
+	<br>
+{% endfor %}
+
+<input type="submit" formaction="/acceptFollow">Accept Follow</button>
+
+<input type="submit" formaction="/rejectFollow">Reject Follow</button>
+</form>
+
+
+<a href="/home">Home</a>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

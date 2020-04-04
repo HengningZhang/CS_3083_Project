@@ -1,0 +1,46 @@
+<html>
+<head>
+</head>
+<body>
+<form action="/post" method="POST">
+	<h1>Welcome {{username}}</h1> 
+	<input type="text" name = "path" placeholder="enter path" required/> </br>
+	<input type="text" name = "caption" placeholder="caption" required/> </br>
+	<input type="text" name = "privacy" placeholder="0 for private,1 for allFollower" required/> </br>
+	<input type="submit" value = Post />
+</form>
+
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+Here are your posts:
+
+<table>
+	<th>postingDate</th>
+	<th>pID</th>
+	<th>caption</th>
+
+{% for line in posts %}
+	<tr>
+		<td>{{line.postingDate}}</td>
+		<td>{{line.pID}}</td>
+		<td>{{line.caption}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<a href="/viewable_photos">browse</a>
+<br>
+<a href="/discover">discover</a>
+<br>
+<a href="/manageFollow">Manage Follower</a>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
