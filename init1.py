@@ -11,7 +11,7 @@ conn = pymysql.connect(host='localhost',
                        port = 3306,
                        user='root',
                        password='',
-                       db='finstagram',
+                       db='finstagram1',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -127,7 +127,7 @@ def discover():
     
 
     cursor = conn.cursor()
-    query="DROP VIEW IF EXISTS finstagram.relation"
+    query="DROP VIEW IF EXISTS relation"
     cursor.execute(query)
     query="Create View Relation AS(Select followee as username From Person Natural JOIN Follow where username=%s and follower=%s)"
     cursor.execute(query,(username,username))
@@ -158,11 +158,11 @@ def viewable_photos():
     except:
         return render_template('index.html')
     cursor=conn.cursor()
-    query="DROP VIEW IF EXISTS finstagram.following"
+    query="DROP VIEW IF EXISTS following"
     cursor.execute(query)
     query="Create View following AS(Select followee as username From Person Natural JOIN Follow where username=%s and follower=%s and followStatus=1)"
     cursor.execute(query,(username,username))
-    query="DROP VIEW IF EXISTS finstagram.myGroup"
+    query="DROP VIEW IF EXISTS myGroup"
     cursor.execute(query)
     query="Create ViEW myGroup AS(select groupName,groupCreator FROM person NATURAL JOIN belongTo where username=%s)"
     cursor.execute(query,(username))
