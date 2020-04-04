@@ -16,23 +16,25 @@
 	}
 </style>
 
-Here are your posts:
+Here are your friends' recent posts:
 
 <table>
 	<th>postingDate</th>
 	<th>pID</th>
 	<th>caption</th>
+	<th>poster</th>
 
 {% for line in posts %}
 	<tr>
 		<td>{{line.postingDate}}</td>
 		<td>{{line.pID}}</td>
 		<td>{{line.caption}}</td>
+		<td>{{line.poster}}</td>
 	</tr>
 {% endfor %}
 </table>
 
-<a href="/viewable_photos">browse</a>
+<a href="/my_posts">View My Posts</a>
 <br>
 <a href="/discover">discover</a>
 <br>
