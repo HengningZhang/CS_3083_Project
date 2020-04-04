@@ -27,7 +27,7 @@ CREATE TABLE block(
         PRIMARY KEY (blocker,blockee),
         FOREIGN KEY (blocker) REFERENCES Person (username),
         FOREIGN KEY (blockee) REFERENCES Person (username)
-)
+);
 
 CREATE TABLE FriendGroup (
         groupName VARCHAR(32),
@@ -87,6 +87,12 @@ CREATE TABLE Follow (
         FOREIGN KEY (followee) REFERENCES Person (username)
 );
 
+INSERT INTO `person` (`username`, `password`, `firstName`, `lastName`, `email`) VALUES
+('hz1704', 'blyat', 'HN', 'Z', 'hz1704@nyu.edu'),
+('yl5680', 'cyka', 'YC', 'L', 'yl5680'),
+('sl1234', 'ccc', 'SC', 'L', 'sl1234@nyu.edu'),
+('francmeister', '123', 'franc', 'meister', 'fm123');
+
 INSERT INTO `follow` (`follower`, `followee`, `followStatus`) VALUES
 ('hz1704', 'yl5680', 1),
 ('yl5680', 'hz1704', 1),
@@ -97,17 +103,10 @@ INSERT INTO `follow` (`follower`, `followee`, `followStatus`) VALUES
 INSERT INTO `friendgroup` (`groupName`, `groupCreator`, `description`) VALUES
 ('eagle', 'sl1234', 'cyka');
 
-INSERT INTO `person` (`username`, `password`, `firstName`, `lastName`, `email`) VALUES
-('hz1704', 'blyat', 'HN', 'Z', 'hz1704@nyu.edu'),
-('yl5680', 'cyka', 'YC', 'L', 'yl5680'),
-('sl1234', 'ccc', 'SC', 'L', 'sl1234@nyu.edu'),
-('francmeister', '123', 'franc', 'meister', 'fm123');
-
 INSERT INTO `photo` (`pID`, `postingDate`, `filePath`, `allFollowers`, `caption`, `poster`) VALUES
 (1, '2020-03-25 00:00:00', '111', 1, 'cyka', 'yl5680'),
 (2, '2020-03-10 00:00:00', '1111', 1, 'asdfasdfa', 'sl1234'),
 (7, '2020-03-31 20:59:08', 'c:\\\\guishi123123123', 1, 'asdfasdfa', 'hz1704'),
-(4, '2020-03-31 16:20:15', 'c:\\\\guishi123', 1, 'shenmolian123', 'abc'),
 (5, '2020-03-31 20:40:12', 'c:\\\\guishi12345', 1, 'shentouguilian', 'hz1704'),
 (6, '2020-03-31 20:42:32', 'c:\\\\777', 1, 'clearlove', 'hz1704');
 
