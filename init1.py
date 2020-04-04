@@ -172,8 +172,9 @@ def viewable_photos():
     data = cursor.fetchall()
     cursor.close()
     return render_template("browse.html",photo_list=data)
-@app.route("/manageFollow",methods=["GET","POST"])
-def manageFollow():
+
+@app.route("/manageFollower",methods=["GET","POST"])
+def manageFollower():
     try:
         username = session['username']
     except:
@@ -194,9 +195,10 @@ def acceptFollow():
     toAccept = request.args['requests']
     cursor=conn.cursor()
     query="UPDATE FOLLOW SET followStatus=1 where followee=%s and follower=%s"
+    print("helloworld")
     cursor.execute(query,(username,toAccept))
     cursor.close()
-    return redirect(url_for('manageFollow'))
+    return redirect(url_for('manageFollower'))
 
 @app.route("/rejectFollow")
 def rejectFollow():
@@ -209,8 +211,37 @@ def rejectFollow():
     query="DELETE FROM FOLLOW where followee=%s and follower=%s"
     cursor.execute(query,(username,toAccept))
     cursor.close()
-    return redirect(url_for('manageFollow'))
-    
+    return redirect(url_for('manageFollower'))
+
+@app.route("/manageBlock")
+def manageBlock():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="SELECT username From (SELECT blockee FROM block WHERE blocker = %s) AS notseen RIGHT JOIN Person on notseen.blockee = Person.username WHERE blockee is Null and username != %s"
+    cursor.execute(query,(username,username))
+    data=cursor.fetchall()
+    cursor.close()
+    return render_template("manageBlock.html",persons=data)
+
+@app.route("/block")
+def block():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    toblock = request.args['toblock']
+    cursor=conn.cursor()
+    query="INSERT INTO block(blocker,blockee) VALUES(%s,%s)"
+    cursor.execute(query,(username,toblock))
+    cursor.close()
+    # print(username,toblock)
+    return redirect(url_for('manageBlock'))
+
+
+
 @app.route('/logout')
 def logout():
     session.pop('username')
