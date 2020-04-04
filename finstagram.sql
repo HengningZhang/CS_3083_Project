@@ -21,7 +21,7 @@ CREATE TABLE Photo (
         FOREIGN KEY (poster) REFERENCES Person (username)
 );
 
-CREATE TABLE block(
+CREATE TABLE Block(
         blocker VARCHAR(32),
         blockee VARCHAR(32),
         PRIMARY KEY (blocker,blockee),
@@ -43,7 +43,7 @@ CREATE TABLE ReactTo (
         reactionTime DATETIME,
         comment VARCHAR(1000),
         emoji VARCHAR(32), -- you may replace this by a BLOB or fileName of a jpg or some such
-	PRIMARY KEY (username, pID),
+	PRIMARY KEY (username, pID,reactionTime),
         FOREIGN KEY (pID) REFERENCES Photo (pID),
         FOREIGN KEY (username) REFERENCES Person (username)
 );
