@@ -248,6 +248,40 @@ def comment():
     cursor.execute(query,(username,toComment,now,commentContent))
     cursor.close()
     return redirect(url_for('home'))
+@app.route("/commentsForMe")
+def commentsForMe():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="SELECT username,reactto.pID,reactionTime,filePath,comment FROM reactto join Photo on reactto.pID=photo.pID WHERE photo.poster=%s"
+    cursor.execute(query,(username))
+    data=cursor.fetchall()
+    cursor.close()
+    if not data:
+        return render_template("noComments.html")
+    else:
+        return render_template("commentsForMe.html",comments=data)
+@app.route("/bestFollower")
+def bestFollower():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="DROP VIEW IF EXISTS maxCommentNum"
+    cursor.execute(query)
+    query="create view maxCommentNum AS(SELECT username,count(username) AS count FROM reactto join Photo on reactto.pID=photo.pID WHERE photo.poster=%s GROUP BY username)"
+    cursor.execute(query,(username))
+    query="SELECT username,max(count) as count from maxcommentnum"
+    cursor.execute(query)
+    data=cursor.fetchall()
+    cursor.close()
+    if not data:
+        return render_template("noComments.html")
+    else:
+        return render_template("bestFollower.html",bestFollower=data)
 @app.route('/logout')
 def logout():
     session.pop('username')

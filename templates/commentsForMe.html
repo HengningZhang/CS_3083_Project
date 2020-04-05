@@ -1,0 +1,38 @@
+<html>
+<head>
+</head>
+<body>
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+Here are the comments about your photos:
+
+<table>
+	<th>username</th>
+    <th>photo ID</th>
+    <th>photo path</th>
+    <th>comment time</th>
+    <th>comment content</th>
+
+{% for line in comments %}
+	<tr>
+		<td>{{line.username}}</td>
+		<td>{{line.pID}}</td>
+        <td>{{line.filePath}}</td>
+        <td>{{line.reactionTime}}</td>
+        <td>{{line.comment}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<a href="/home">Home</a>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

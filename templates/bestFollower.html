@@ -1,0 +1,34 @@
+<html>
+<head>
+</head>
+<body>
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+Check out your most enthusiastic follower!
+Don't forget to give him/her some feedback!
+
+
+<table>
+	<th>username</th>
+    <th>comment(times)</th>
+
+{% for line in bestFollower%}
+	<tr>
+		<td>{{line.username}}</td>
+		<td>{{line.count}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<a href="/home">Home</a>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>
