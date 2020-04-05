@@ -89,27 +89,52 @@ def registerAuth():
 
 @app.route('/home')
 def home():
+
     username = session['username']
     cursor=conn.cursor()
+    query="DROP VIEW IF EXISTS peopleaccess"
+    cursor.execute(query)
+
+    query="DROP VIEW IF EXISTS photoaccess"
+    cursor.execute(query)
+
     query="DROP VIEW IF EXISTS following"
     cursor.execute(query)
-    query="Create View following AS(Select followee as username From Person Natural JOIN Follow where username=%s and follower=%s and followStatus=1)"
-    cursor.execute(query,(username,username))
-    query="DROP VIEW IF EXISTS myGroup"
+
+    query="DROP VIEW IF EXISTS fullaccess"
     cursor.execute(query)
-    query="Create ViEW myGroup AS(select groupName,groupCreator FROM person NATURAL JOIN belongTo where username=%s)"
+
+    query="CREATE VIEW following As(SELECT followee FROM follow WHERE follower=%s and followstatus=1)"
     cursor.execute(query,(username))
-    query="SELECT pID,postingDate,filePath,caption,poster FROM following JOIN photo ON following.username=photo.poster UNION SELECT pID,postingDate,filePath,caption,poster FROM myGroup NATURAL JOIN sharedWith NATURAL JOIN photo"
+
+    query="CREATE VIEW peopleaccess As(SELECT followee From following LEFT JOIN block on following.followee = block.blocker AND blockee=%s WHERE blockee is null)"
+    cursor.execute(query,(username))
+
+
+    query="CREATE VIEW PhotoAccess AS (SELECT pID FROM peopleaccess JOIN photo on peopleaccess.followee = photo.poster WHERE Photo.allFollowers=1)"
+    cursor.execute(query)
+
+
+    query="CREATE view fullaccess as(SELECT * FROM photo WHERE pID IN (SELECT pID FROM photo WHERE poster=%s UNION SELECT pID from photoaccess UNION SELECT pID FROM belongto NATURAL JOIN sharedwith WHERE belongto.username =%s)ORDER BY postingDate DESC)"
+    
+    cursor.execute(query,(username,username))
+    query = "SELECT * FROM fullaccess"
     cursor.execute(query)
     data = cursor.fetchall()
     cursor.close()
-    # cursor = conn.cursor()
-    # query = 'SELECT postingDate,pID,caption FROM photo WHERE poster = %s ORDER BY postingDate DESC'
-    # cursor.execute(query, (username))
-    # data = cursor.fetchall()
-    # cursor.close()
     return render_template('home.html', username=username ,posts=data)
-
+@app.route("/my_posts",methods=["GET"])
+def my_posts():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor = conn.cursor()
+    query = 'SELECT postingDate,pID,caption FROM photo WHERE poster = %s ORDER BY postingDate DESC'
+    cursor.execute(query, (username))
+    data = cursor.fetchall()
+    cursor.close()
+    return render_template("myposts.html",photo_list=data)
 @app.route('/goToPost')
 def goToPost():
     username = session['username']
@@ -152,7 +177,10 @@ def discover():
     cursor.execute(query,(username))
     data = cursor.fetchall()
     cursor.close()
-    return render_template('discover.html', user_list=data)
+    if not data:
+        return render_template('discoverNull.html', user_list=data)
+    else:
+        return render_template('discover.html', user_list=data)
 
 
 @app.route('/follow')
@@ -168,46 +196,7 @@ def follow():
     cursor.close()
     return redirect(url_for('discover'))
 
-@app.route("/viewable_photos",methods=["GET"])
-def viewable_photos():
-    try:
-        username = session['username']
-    except:
-        return render_template('index.html')
-    cursor=conn.cursor()
-    query="DROP VIEW IF EXISTS peopleaccess"
-    cursor.execute(query)
 
-    query="DROP VIEW IF EXISTS photoaccess"
-    cursor.execute(query)
-
-    query="DROP VIEW IF EXISTS following"
-    cursor.execute(query)
-
-    query="DROP VIEW IF EXISTS fullaccess"
-    cursor.execute(query)
-
-    query="CREATE VIEW following As(SELECT followee FROM follow WHERE follower=%s and followstatus=1)"
-    cursor.execute(query,(username))
-
-    query="CREATE VIEW peopleaccess As(SELECT followee From following LEFT JOIN block on following.followee = block.blocker AND blockee=%s WHERE blockee is null)"
-    cursor.execute(query,(username))
-
-
-    query="CREATE VIEW PhotoAccess AS (SELECT pID FROM peopleaccess JOIN photo on peopleaccess.followee = photo.poster WHERE Photo.allFollowers=1)"
-    cursor.execute(query)
-
-
-    query="CREATE view fullaccess as(SELECT * FROM photo WHERE pID IN (SELECT pID FROM photo WHERE poster=%s UNION SELECT pID from photoaccess UNION SELECT pID FROM belongto NATURAL JOIN sharedwith WHERE belongto.username =%s)ORDER BY postingDate DESC)"
-    
-    cursor.execute(query,(username,username))
-    query = "SELECT * FROM fullaccess"
-    cursor.execute(query)
-    data = cursor.fetchall()
-
-
-    cursor.close()
-    return render_template("browse.html",photo_list=data)
 
 @app.route("/manageFollower",methods=["GET","POST"])
 def manageFollower():

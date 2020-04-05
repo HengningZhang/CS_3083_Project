@@ -33,7 +33,7 @@ Reacting to each other makes the society better!
 		<td>{{line.postingDate}}</td>
 		<td>{{line.pID}}</td>
 		<td>{{line.caption}}</td>
-		<td>{{line.poster}}</td>
+		<td href="/home"><a href="/everyone/{{ line.poster }}">{{line.poster}}</a></td>
 	</tr>
 {% endfor %}
 </table>
@@ -49,7 +49,7 @@ Reacting to each other makes the society better!
 <br>
 <a href="/bestFollower">Find out who is my best follower!</a>
 <br>
-<a href="/discover">discover</a>
+<a href="/discover">Discover</a>
 <br>
 <a href="/manageFollower">Manage Follower</a>
 <br>
