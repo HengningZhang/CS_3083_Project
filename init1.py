@@ -159,17 +159,37 @@ def viewable_photos():
     except:
         return render_template('index.html')
     cursor=conn.cursor()
+    query="DROP VIEW IF EXISTS peopleaccess"
+    cursor.execute(query)
+
+    query="DROP VIEW IF EXISTS photoaccess"
+    cursor.execute(query)
+
     query="DROP VIEW IF EXISTS following"
     cursor.execute(query)
-    query="Create View following AS(Select followee as username From Person Natural JOIN Follow where username=%s and follower=%s and followStatus=1)"
-    cursor.execute(query,(username,username))
-    query="DROP VIEW IF EXISTS myGroup"
+
+    query="DROP VIEW IF EXISTS fullaccess"
     cursor.execute(query)
-    query="Create ViEW myGroup AS(select groupName,groupCreator FROM person NATURAL JOIN belongTo where username=%s)"
+
+    query="CREATE VIEW following As(SELECT followee FROM follow WHERE follower=%s and followstatus=1)"
     cursor.execute(query,(username))
-    query="SELECT pID,postingDate,filePath,caption,poster FROM following JOIN photo ON following.username=photo.poster UNION SELECT pID,postingDate,filePath,caption,poster FROM myGroup NATURAL JOIN sharedWith NATURAL JOIN photo"
+
+    query="CREATE VIEW peopleaccess As(SELECT followee From following LEFT JOIN block on following.followee = block.blocker AND blockee=%s WHERE blockee is null)"
+    cursor.execute(query,(username))
+
+
+    query="CREATE VIEW PhotoAccess AS (SELECT pID FROM peopleaccess JOIN photo on peopleaccess.followee = photo.poster WHERE Photo.allFollowers=1)"
+    cursor.execute(query)
+
+
+    query="CREATE view fullaccess as(SELECT * FROM photo WHERE pID IN (SELECT pID FROM photo WHERE poster=%s UNION SELECT pID from photoaccess UNION SELECT pID FROM belongto NATURAL JOIN sharedwith WHERE belongto.username =%s)ORDER BY postingDate DESC)"
+    
+    cursor.execute(query,(username,username))
+    query = "SELECT * FROM fullaccess"
     cursor.execute(query)
     data = cursor.fetchall()
+
+
     cursor.close()
     return render_template("browse.html",photo_list=data)
 
@@ -195,7 +215,7 @@ def acceptFollow():
     toAccept = request.args['requests']
     cursor=conn.cursor()
     query="UPDATE FOLLOW SET followStatus=1 where followee=%s and follower=%s"
-    print("helloworld")
+    # print("helloworld")
     cursor.execute(query,(username,toAccept))
     cursor.close()
     return redirect(url_for('manageFollower'))
@@ -234,13 +254,20 @@ def block():
         return render_template('index.html')
     toblock = request.args['toblock']
     cursor=conn.cursor()
-    query="INSERT INTO block(blocker,blockee) VALUES(%s,%s)"
+    query="INSERT INTO finstagram1.block(blocker,blockee) VALUES(%s,%s)"
     cursor.execute(query,(username,toblock))
+    conn.commit()
     cursor.close()
     # print(username,toblock)
     return redirect(url_for('manageBlock'))
 
-
+@app.route('/everyone/<name>')
+def everyone(name):
+    cursor=conn.cursor()
+    query = "SELECT * FROM fullaccess where poster=%s"
+    cursor.execute(query,(name))
+    data = cursor.fetchall()
+    return render_template("everyone.html",posts = data)
 
 @app.route('/logout')
 def logout():
