@@ -167,33 +167,50 @@ def follow():
     cursor.execute(query, (username,toFollow))
     cursor.close()
     return redirect(url_for('discover'))
-@app.route("/my_posts",methods=["GET"])
-def my_posts():
+
+@app.route("/viewable_photos",methods=["GET"])
+def viewable_photos():
     try:
         username = session['username']
     except:
         return render_template('index.html')
-    cursor = conn.cursor()
-    query = 'SELECT postingDate,pID,caption FROM photo WHERE poster = %s ORDER BY postingDate DESC'
-    cursor.execute(query, (username))
+    cursor=conn.cursor()
+    query="DROP VIEW IF EXISTS peopleaccess"
+    cursor.execute(query)
+
+    query="DROP VIEW IF EXISTS photoaccess"
+    cursor.execute(query)
+
+    query="DROP VIEW IF EXISTS following"
+    cursor.execute(query)
+
+    query="DROP VIEW IF EXISTS fullaccess"
+    cursor.execute(query)
+
+    query="CREATE VIEW following As(SELECT followee FROM follow WHERE follower=%s and followstatus=1)"
+    cursor.execute(query,(username))
+
+    query="CREATE VIEW peopleaccess As(SELECT followee From following LEFT JOIN block on following.followee = block.blocker AND blockee=%s WHERE blockee is null)"
+    cursor.execute(query,(username))
+
+
+    query="CREATE VIEW PhotoAccess AS (SELECT pID FROM peopleaccess JOIN photo on peopleaccess.followee = photo.poster WHERE Photo.allFollowers=1)"
+    cursor.execute(query)
+
+
+    query="CREATE view fullaccess as(SELECT * FROM photo WHERE pID IN (SELECT pID FROM photo WHERE poster=%s UNION SELECT pID from photoaccess UNION SELECT pID FROM belongto NATURAL JOIN sharedwith WHERE belongto.username =%s)ORDER BY postingDate DESC)"
+    
+    cursor.execute(query,(username,username))
+    query = "SELECT * FROM fullaccess"
+    cursor.execute(query)
     data = cursor.fetchall()
+
+
     cursor.close()
-    # cursor=conn.cursor()
-    # query="DROP VIEW IF EXISTS following"
-    # cursor.execute(query)
-    # query="Create View following AS(Select followee as username From Person Natural JOIN Follow where username=%s and follower=%s and followStatus=1)"
-    # cursor.execute(query,(username,username))
-    # query="DROP VIEW IF EXISTS myGroup"
-    # cursor.execute(query)
-    # query="Create ViEW myGroup AS(select groupName,groupCreator FROM person NATURAL JOIN belongTo where username=%s)"
-    # cursor.execute(query,(username))
-    # query="SELECT pID,postingDate,filePath,caption,poster FROM following JOIN photo ON following.username=photo.poster UNION SELECT pID,postingDate,filePath,caption,poster FROM myGroup NATURAL JOIN sharedWith NATURAL JOIN photo"
-    # cursor.execute(query)
-    # data = cursor.fetchall()
-    # cursor.close()
-    return render_template("myposts.html",photo_list=data)
-@app.route("/manageFollow",methods=["GET","POST"])
-def manageFollow():
+    return render_template("browse.html",photo_list=data)
+
+@app.route("/manageFollower",methods=["GET","POST"])
+def manageFollower():
     try:
         username = session['username']
     except:
@@ -217,9 +234,10 @@ def acceptFollow():
     toAccept = request.args['requests']
     cursor=conn.cursor()
     query="UPDATE FOLLOW SET followStatus=1 where followee=%s and follower=%s"
+    # print("helloworld")
     cursor.execute(query,(username,toAccept))
     cursor.close()
-    return redirect(url_for('manageFollow'))
+    return redirect(url_for('manageFollower'))
 
 @app.route("/rejectFollow")
 def rejectFollow():
@@ -232,13 +250,15 @@ def rejectFollow():
     query="DELETE FROM FOLLOW where followee=%s and follower=%s"
     cursor.execute(query,(username,toAccept))
     cursor.close()
-    return redirect(url_for('manageFollow'))
+    return redirect(url_for('manageFollower'))
+
 @app.route('/comment')
 def comment():
     try:
         username = session['username']
     except:
         return render_template('index.html')
+    
     toComment = request.args['selected']
     commentContent=request.args['commentContent']
     cursor=conn.cursor()
@@ -248,6 +268,19 @@ def comment():
     cursor.execute(query,(username,toComment,now,commentContent))
     cursor.close()
     return redirect(url_for('home'))
+
+@app.route("/manageBlock")
+def manageBlock():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="SELECT username From (SELECT blockee FROM block WHERE blocker = %s) AS notseen RIGHT JOIN Person on notseen.blockee = Person.username WHERE blockee is Null and username != %s"
+    cursor.execute(query,(username,username))
+    data=cursor.fetchall()
+    cursor.close()
+    return render_template("manageBlock.html",persons=data)
 @app.route("/commentsForMe")
 def commentsForMe():
     try:
@@ -282,6 +315,30 @@ def bestFollower():
         return render_template("noComments.html")
     else:
         return render_template("bestFollower.html",bestFollower=data)
+@app.route("/block")
+def block():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    
+    toblock = request.args['toblock']
+    cursor=conn.cursor()
+    query="INSERT INTO finstagram1.block(blocker,blockee) VALUES(%s,%s)"
+    cursor.execute(query,(username,toblock))
+    conn.commit()
+    cursor.close()
+    # print(username,toblock)
+    return redirect(url_for('manageBlock'))
+
+@app.route('/everyone/<name>')
+def everyone(name):
+    cursor=conn.cursor()
+    query = "SELECT * FROM fullaccess where poster=%s"
+    cursor.execute(query,(name))
+    data = cursor.fetchall()
+    return render_template("everyone.html",posts = data)
+
 @app.route('/logout')
 def logout():
     session.pop('username')
@@ -293,3 +350,5 @@ app.secret_key = 'some key that you will never guess'
 #for changes to go through, TURN OFF FOR PRODUCTION
 if __name__ == "__main__":
     app.run('127.0.0.1', 5000, debug = True)
+
+#//////////

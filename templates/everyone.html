@@ -2,28 +2,32 @@
 <head>
 </head>
 <body>
-<style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-</style>
 
-Here are the viewable photos:
+    <style type="text/css">
+        table, th, td{
+            border: 1px solid black;
+        }
+    </style>
+
+
+<br>
 
 <table>
 	<th>postingDate</th>
 	<th>pID</th>
-    <th>caption</th>
+	<th>caption</th>
+	<th>poster</th>
 
-{% for line in photo_list %}
+{% for line in posts %}
 	<tr>
 		<td>{{line.postingDate}}</td>
 		<td>{{line.pID}}</td>
         <td>{{line.caption}}</td>
-        <td href="/home"><a href="/everyone/{{ line.poster }}">{{line.poster}}</a></td>
+        <td>{{line.poster}}</td>
 	</tr>
 {% endfor %}
 </table>
+
 
 <a href="/home">Home</a>
 <br>
