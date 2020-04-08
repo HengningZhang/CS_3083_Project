@@ -24,4 +24,4 @@ in them, see who’s tagged in what, etc.
 * Search by poster
 
 ## Screenshots
-<img src="discover.png" width=1000><br>
+<img src="discover.PNG" width=1000><br>
