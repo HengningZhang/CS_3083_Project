@@ -27,3 +27,9 @@ in them, see who’s tagged in what, etc.
 ![Discover](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/discover.PNG)
 
 ![Login](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/login.PNG)
+
+![mainpage](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/mainpage.PNG)
+
+![managefollowers](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/managefollower.PNG)
+
+![register](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/register.PNG)
