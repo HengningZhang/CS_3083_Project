@@ -24,4 +24,4 @@ in them, see who’s tagged in what, etc.
 * Search by poster
 
 ## Screenshots
-https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/discover.PNG
+![Discover](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/discover.PNG)
