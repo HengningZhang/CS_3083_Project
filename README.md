@@ -25,4 +25,5 @@ in them, see who’s tagged in what, etc.
 
 ## Screenshots
 ![Discover](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/discover.PNG)
-![](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/login.PNG)
+
+![Login](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/login.PNG)
