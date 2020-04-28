@@ -51,6 +51,7 @@ def loginAuth():
         #creates a session for the the user
         #session is a built in
         session['username'] = username
+        session['password'] = password
         return redirect(url_for('home'))
     else:
         #returns an error message to the html page
@@ -214,6 +215,22 @@ def manageFollower():
     else:
         return render_template("manageFollower.html",requests=data)
 
+@app.route("/manageFollowee",methods=["GET","POST"])
+def manageFollowee():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="SELECT follower from follow where followee=%s and followStatus=1"
+    cursor.execute(query,(username))
+    data=cursor.fetchall()
+    cursor.close()
+    if not data:
+        return render_template("noFollowee.html")
+    else:
+        return render_template("manageFollowee.html",requests=data)
+
 @app.route("/acceptFollow")
 def acceptFollow():
     try:
@@ -320,6 +337,74 @@ def block():
     # print(username,toblock)
     return redirect(url_for('manageBlock'))
 
+@app.route("/manageAccount")
+def manageAccount():
+    return render_template('manageAccount.html')
+
+@app.route("/managePassword")
+def managePassword():
+    return render_template('managePassword.html')
+
+@app.route("/managePasswordAuth", methods=['GET', 'POST'])
+def managePasswordAuth():
+    username = session['username']
+    password = session['password']
+    current_password=request.form['currentPassword']
+    new_password = request.form['newPassword']
+    confirm_password = request.form['confirmPassword']
+    cursor=conn.cursor()
+    query="UPDATE PERSON SET PASSWORD=%s WHERE USERNAME=%s"
+    error=None
+    if current_password==password and new_password == confirm_password:
+        cursor.execute(query,(new_password,username))
+        data=cursor.fetchall()
+        session['password'] = new_password
+
+    elif current_password != password:
+        error = "Password incorrect"
+        data=None
+    else:
+        error = "New password doesn't match"
+        data=None
+    conn.commit()
+    cursor.close()
+    if data!=None:
+        return render_template("ManageSuccess.html")
+    else:
+        return render_template('managePassword.html', error = error)
+
+@app.route("/manageUsername")
+def manageUsername():
+    return render_template('manageUsername.html')
+
+@app.route("/manageUsernameAuth", methods=['GET', 'POST'])
+def manageUsernameAuth():
+    username = session['username']
+    new_username = request.form['newusername']
+    confirm_username = request.form['confirmusername']
+    cursor=conn.cursor()
+    query = 'SELECT * FROM person WHERE username = %s'
+    cursor.execute(query, (new_username))
+    data = cursor.fetchone()
+    error=None
+    if new_username!=confirm_username:
+        error = "New username doesn't match"
+        new_data=None
+    elif data:
+        error = "This user already exists"
+        new_data=None
+    else:
+        new_query="UPDATE PERSON SET username=%s WHERE USERNAME=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_data=cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    if new_data!=None:
+        return render_template("ManageSuccess.html")
+    else:
+        return render_template('manageUsername.html', error = error)
+
+
 @app.route('/everyone/<name>')
 def everyone(name):
     cursor=conn.cursor()
@@ -334,6 +419,9 @@ def logout():
     return redirect('/')
         
 app.secret_key = 'some key that you will never guess'
+
+
+
 #Run the app on localhost port 5000
 #debug = True -> you don't have to restart flask
 #for changes to go through, TURN OFF FOR PRODUCTION
