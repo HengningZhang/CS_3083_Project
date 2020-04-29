@@ -258,6 +258,20 @@ def rejectFollow():
     cursor.close()
     return redirect(url_for('manageFollower'))
 
+@app.route("/unFollow")
+def unFollow():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    toAccept = request.args['requests']
+    cursor=conn.cursor()
+    query="DELETE FROM FOLLOW where followee=%s and follower=%s"
+    cursor.execute(query,(username,toAccept))
+    cursor.close()
+    return redirect(url_for('manageFollowee'))
+
+
 @app.route('/comment')
 def comment():
     try:
@@ -396,6 +410,26 @@ def manageUsernameAuth():
     else:
         new_query="UPDATE PERSON SET username=%s WHERE USERNAME=%s"
         cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE follow SET follower=%s WHERE follower=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE follow SET followee=%s WHERE followee=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE block SET blockee=%s WHERE blockee=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE block SET blocker=%s WHERE blocker=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE belongto SET username=%s WHERE USERNAME=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE reactto SET username=%s WHERE USERNAME=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE sharedwith SET groupCreator=%s WHERE groupCreator=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE tag SET username=%s WHERE USERNAME=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE friendgroup SET groupCreator=%s WHERE groupCreator=%s"
+        cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE photo SET poster=%s WHERE poster=%s"
+        cursor.execute(new_query, (new_username,username))
         new_data=cursor.fetchall()
         session['username'] = new_username
     conn.commit()
@@ -404,6 +438,39 @@ def manageUsernameAuth():
         return render_template("ManageSuccess.html")
     else:
         return render_template('manageUsername.html', error = error)
+
+@app.route("/deleteAccount")
+def deleteAccount():
+    return render_template('deleteAccount.html')
+
+@app.route("/deleteAuth")
+def deleteAuth():
+    username = session['username']
+    cursor=conn.cursor()
+    query="DELETE FROM PERSON WHERE USERNAME=%s"
+    cursor.execute(query, (username))
+    new_query="DELETE FROM follow WHERE follower=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM follow WHERE followee=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM block WHERE blockee=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM block WHERE blocker=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM belongto WHERE USERNAME=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM reactto WHERE USERNAME=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM sharedwith WHERE groupCreator=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM tag WHERE USERNAME=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM friendgroup WHERE groupCreator=%s"
+    cursor.execute(new_query, (username))
+    new_query="DELETE FROM photo WHERE poster=%s"
+    cursor.execute(new_query, (username))
+    data=cursor.fetchall()
+    return render_template("index.html")
 
 
 @app.route('/everyone/<name>')
