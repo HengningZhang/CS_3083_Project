@@ -199,8 +199,8 @@ def follow():
 
 
 
-@app.route("/manageFollower",methods=["GET","POST"])
-def manageFollower():
+@app.route("/manageFollow",methods=["GET","POST"])
+def manageFollow():
     try:
         username = session['username']
     except:
@@ -213,6 +213,22 @@ def manageFollower():
     if not data:
         return render_template("noRequests.html")
     else:
+        return render_template("manageFollow.html",requests=data)
+
+@app.route("/manageFollower",methods=["GET","POST"])
+def manageFollower():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="SELECT follower from follow where followee=%s and followStatus=1"
+    cursor.execute(query,(username))
+    data=cursor.fetchall()
+    cursor.close()
+    if not data:
+        return render_template("noFollower.html")
+    else:
         return render_template("manageFollower.html",requests=data)
 
 @app.route("/manageFollowee",methods=["GET","POST"])
@@ -222,7 +238,7 @@ def manageFollowee():
     except:
         return render_template('index.html')
     cursor=conn.cursor()
-    query="SELECT follower from follow where followee=%s and followStatus=1"
+    query="SELECT followee from follow where follower=%s and followStatus=1"
     cursor.execute(query,(username))
     data=cursor.fetchall()
     cursor.close()
@@ -243,10 +259,23 @@ def acceptFollow():
     # print("helloworld")
     cursor.execute(query,(username,toAccept))
     cursor.close()
-    return redirect(url_for('manageFollower'))
+    return redirect(url_for('manageFollow'))
 
 @app.route("/rejectFollow")
 def rejectFollow():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    toAccept = request.args['requests']
+    cursor=conn.cursor()
+    query="DELETE FROM FOLLOW where followee=%s and follower=%s"
+    cursor.execute(query,(username,toAccept))
+    cursor.close()
+    return redirect(url_for('manageFollow'))
+
+@app.route("/remove")
+def remove():
     try:
         username = session['username']
     except:
@@ -266,11 +295,10 @@ def unFollow():
         return render_template('index.html')
     toAccept = request.args['requests']
     cursor=conn.cursor()
-    query="DELETE FROM FOLLOW where followee=%s and follower=%s"
+    query="DELETE FROM FOLLOW where follower=%s and followee=%s"
     cursor.execute(query,(username,toAccept))
     cursor.close()
     return redirect(url_for('manageFollowee'))
-
 
 @app.route('/comment')
 def comment():

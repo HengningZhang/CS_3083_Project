@@ -4,7 +4,7 @@
 <body>
 
 
-Manage your Followee(s)!
+Manage your follow requests!
 <br>
 
 <!-- <form action="/acceptFollow" method="GET"> -->
@@ -16,8 +16,9 @@ Manage your Followee(s)!
 	<br>
 {% endfor %}
 
+<input type="submit" formaction="/acceptFollow" value="Accept"></button>
 
-<input type="submit" formaction="/remove" value="Remove"></button>
+<input type="submit" formaction="/rejectFollow" value="Decline"></button>
 </form>
 
 

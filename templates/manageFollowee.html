@@ -12,12 +12,12 @@ Manage your Followee(s)!
 
 
 {% for line in requests %}
-<input type="radio" name="requests" value={{line.follower}}>{{line.follower}}</input>
+<input type="radio" name="requests" value={{line.followee}}>{{line.followee}}</input>
 	<br>
 {% endfor %}
 
 
-<input type="submit" formaction="/rejectFollow" value="Unfollow"></button>
+<input type="submit" formaction="/unFollow" value="Unfollow"></button>
 </form>
 
 
