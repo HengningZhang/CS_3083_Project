@@ -391,12 +391,13 @@ def manageUsernameAuth():
         error = "New username doesn't match"
         new_data=None
     elif data:
-        error = "This user already exists"
+        error = "This username already exists"
         new_data=None
     else:
         new_query="UPDATE PERSON SET username=%s WHERE USERNAME=%s"
         cursor.execute(new_query, (new_username,username))
         new_data=cursor.fetchall()
+        session['username'] = new_username
     conn.commit()
     cursor.close()
     if new_data!=None:
