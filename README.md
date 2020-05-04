@@ -18,10 +18,11 @@ in them, see who’s tagged in what, etc.
 * Manage Follows
 * Add friendgroup
 * Unfollow a person
+* Remove from followers
 * Block a person
-* Mention a person when posting photo
 * React to a photo
 * Search by poster
+* Manage account(Manage password, username and delete account)
 
 ## Screenshots
 ![Discover](https://github.com/HengningZhang/CS_3083_Project/blob/master/screenshots/discover.PNG)
