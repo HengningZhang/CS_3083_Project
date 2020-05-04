@@ -11,7 +11,7 @@ conn = pymysql.connect(host='localhost',
                        port = 3306,
                        user='root',
                        password="",
-                       db='finstagram1',
+                       db='finstagram',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -372,7 +372,7 @@ def block():
     
     toblock = request.args['toblock']
     cursor=conn.cursor()
-    query="INSERT INTO finstagram1.block(blocker,blockee) VALUES(%s,%s)"
+    query="INSERT INTO finstagram.block(blocker,blockee) VALUES(%s,%s)"
     cursor.execute(query,(username,toblock))
     conn.commit()
     cursor.close()
