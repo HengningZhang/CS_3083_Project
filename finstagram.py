@@ -448,6 +448,8 @@ def manageUsernameAuth():
         cursor.execute(new_query, (new_username,username))
         new_query="UPDATE belongto SET username=%s WHERE USERNAME=%s"
         cursor.execute(new_query, (new_username,username))
+        new_query="UPDATE belongto SET groupCreator=%s WHERE groupCreator=%s"
+        cursor.execute(new_query, (new_username,username))
         new_query="UPDATE reactto SET username=%s WHERE USERNAME=%s"
         cursor.execute(new_query, (new_username,username))
         new_query="UPDATE sharedwith SET groupCreator=%s WHERE groupCreator=%s"
