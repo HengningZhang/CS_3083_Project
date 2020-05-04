@@ -489,6 +489,8 @@ def deleteAuth():
     cursor.execute(new_query, (username))
     new_query="DELETE FROM belongto WHERE USERNAME=%s"
     cursor.execute(new_query, (username))
+    new_query="DELETE FROM belongto WHERE groupCreator=%s"
+    cursor.execute(new_query, (username))
     new_query="DELETE FROM reactto WHERE USERNAME=%s"
     cursor.execute(new_query, (username))
     new_query="DELETE FROM sharedwith WHERE groupCreator=%s"
