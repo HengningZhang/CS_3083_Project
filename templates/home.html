@@ -20,6 +20,7 @@
 Here are your friends' recent posts, select one to comment!
 Reacting to each other makes the society better!
 
+
 <form action="/comment">
 <table>
 	<th>postingDate</th>
@@ -28,7 +29,7 @@ Reacting to each other makes the society better!
 	<th>poster</th>
 	<th>First name</th>
 	<th>Last name</th>
-	<th>comment</th>>
+	<th>photo and comment</th>>
 {% for line in posts %}
 	<tr>
 		<input type="radio" name="selected" value={{line.pID}}>{{line.pID}}</input>
@@ -38,7 +39,7 @@ Reacting to each other makes the society better!
 		<td href="/home"><a href="/everyone/{{ line.poster }}">{{line.poster}}</a></td>
 		<td>{{line.firstName}}</td>
 		<td>{{line.lastName}}</td>
-		<td href="/home"><a href="/seeComments/{{line.pID}}">view comment</a></td>
+		<td href="/home"><a href="/seeComments/{{line.pID}}/{{line.filePath}}">view</a></td>
 	</tr>
 {% endfor %}
 </table>

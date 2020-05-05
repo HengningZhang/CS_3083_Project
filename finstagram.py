@@ -371,21 +371,20 @@ def commentsForMe():
         return render_template("noComments.html")
     else:
         return render_template("commentsForMe.html",comments=data)
-@app.route("/seeComments/<pID>")
-def seeComments(pID):
+@app.route("/seeComments/<pID>/<filePath>")
+def seeComments(pID,filePath):
     try:
         username = session['username']
     except:
         return render_template('index.html')
     cursor=conn.cursor()
-    query="SELECT username,comment FROM reactto Natural Join photo where pid=%s"
+    query="SELECT username,comment FROM reactto Natural Join photo where pID=%s"
     cursor.execute(query,(pID))
     data=cursor.fetchall()
     cursor.close()
-    if not data:
-        return render_template("noComments.html")
-    else:
-        return render_template("seecomments.html",comments=data)
+    return render_template("seecomments.html",comments=data,image=filePath)
+
+
 @app.route("/bestFollower")
 def bestFollower():
     try:
