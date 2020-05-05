@@ -119,7 +119,7 @@ def home():
     query="CREATE view fullaccess as(SELECT * FROM photo WHERE pID IN (SELECT pID FROM photo WHERE poster=%s UNION SELECT pID from photoaccess UNION SELECT pID FROM belongto NATURAL JOIN sharedwith WHERE belongto.username =%s)ORDER BY postingDate DESC)"
     
     cursor.execute(query,(username,username))
-    query = "SELECT * FROM fullaccess"
+    query = "SELECT * FROM fullaccess join person on fullaccess.poster=person.username"
     cursor.execute(query)
     data = cursor.fetchall()
     cursor.close()
@@ -344,6 +344,21 @@ def commentsForMe():
         return render_template("noComments.html")
     else:
         return render_template("commentsForMe.html",comments=data)
+@app.route("/seeComments/<pID>")
+def seeComments(pID):
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor=conn.cursor()
+    query="SELECT username,comment FROM reactto Natural Join photo where pid=%s"
+    cursor.execute(query,(pID))
+    data=cursor.fetchall()
+    cursor.close()
+    if not data:
+        return render_template("noComments.html")
+    else:
+        return render_template("seecomments.html",comments=data)
 @app.route("/bestFollower")
 def bestFollower():
     try:
