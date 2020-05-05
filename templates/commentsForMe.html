@@ -15,7 +15,8 @@ Here are the comments about your photos:
     <th>photo ID</th>
     <th>photo path</th>
     <th>comment time</th>
-    <th>comment content</th>
+	<th>comment content</th>
+	<th>emoji</th>
 
 {% for line in comments %}
 	<tr>
@@ -23,7 +24,8 @@ Here are the comments about your photos:
 		<td>{{line.pID}}</td>
         <td>{{line.filePath}}</td>
         <td>{{line.reactionTime}}</td>
-        <td>{{line.comment}}</td>
+		<td>{{line.comment}}</td>
+		<td>{{line.emoji}}</td>
 	</tr>
 {% endfor %}
 </table>

@@ -363,7 +363,7 @@ def commentsForMe():
     except:
         return render_template('index.html')
     cursor=conn.cursor()
-    query="SELECT username,reactto.pID,reactionTime,filePath,comment FROM reactto join Photo on reactto.pID=photo.pID WHERE photo.poster=%s"
+    query="SELECT username,reactto.pID,reactionTime,filePath,comment,emoji FROM reactto join Photo on reactto.pID=photo.pID WHERE photo.poster=%s"
     cursor.execute(query,(username))
     data=cursor.fetchall()
     cursor.close()
