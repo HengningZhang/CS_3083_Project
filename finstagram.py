@@ -274,6 +274,33 @@ def rejectFollow():
     cursor.close()
     return redirect(url_for('manageFollow'))
 
+@app.route("/goToCreateFG")
+def goToCreateFG():
+    username = session['username']
+    return render_template('creatingFG.html',username=username) 
+
+@app.route('/createFriendGroup',methods=["GET","POST"])
+def createFriendGroup():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    if request.method == 'POST':
+        groupname = request.form['group']
+    cursor = conn.cursor()
+    query = 'select groupName,groupCreator From friendgroup where groupName="%s" and groupCreator="%s"'
+    cursor.execute(query, (groupname,username))
+    data=cursor.fetchall()
+    if data:
+        return render_template("errorCreateFG.html")
+    else:
+        query = 'insert into friendgroup values("%s","%s","")'
+        cursor.execute(query, (groupname,username))
+        query = 'insert into friendgroup values("%s","%s","%s")'
+        cursor.execute(query,(username,groupname,username))
+        return render_template("successCreateFG.html")
+    cursor.close()
+
 @app.route("/remove")
 def remove():
     try:
