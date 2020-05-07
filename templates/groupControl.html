@@ -1,0 +1,70 @@
+<html>
+<head>
+</head>
+<body>
+
+    <style type="text/css">
+        table, th, td{
+            border: 1px solid black;
+        }
+    </style>
+
+
+<br>
+This is Group {{groupName}} created by {{groupCreator}}
+<br>
+<table>
+	<th>Members</th>
+
+{% for line in persons %}
+	<tr>
+		<td>{{line.username}}</td>
+	</tr>
+{% endfor %}
+</table>
+<br>
+
+<br>
+<table>
+	<th>posts</th>
+
+{% for line in posts %}
+	<tr>
+		<td>{{line.pID}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<br>
+Add Members
+<form action="/addPerson/{{groupName}}/{{groupCreator}}">
+    {% for line in notingroup %}
+    <input type="radio" name="requests" value={{line.username}}>
+        {{line.username}}
+    </input>
+    <br>
+    {% endfor %}
+    <input type="submit" value='Add'>
+</form>
+<br>
+
+<br>
+Add Posts
+<form action="/addPost/{{groupName}}/{{groupCreator}}">
+    {% for line in notinposts %}
+    <input type="radio" name="request" value={{line.pid}}>
+        {{line.pid}}
+    </input>
+    <br>
+    {% endfor %}
+    <input type="submit" value='Add'>
+</form>
+
+<a href="/home">Home</a>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

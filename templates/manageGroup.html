@@ -1,0 +1,32 @@
+<html>
+<head>
+</head>
+<body>
+
+<br>
+
+<form action="/manageGroup" method="GET">
+    <table>
+        <th>groupName</th>
+        <th>groupCreator</th>
+        <th>description</th>
+    {% for line in groups %}
+        <tr>
+            <td><a href ="/groupControl/{{line.groupName}}/{{line.groupCreator}}">{{line.groupName}}</a></td>
+            <td>{{line.groupCreator}}</td>
+            <td>{{line.description}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+</form>
+
+
+<a href="/home">Home</a>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

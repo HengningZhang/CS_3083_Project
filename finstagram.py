@@ -298,6 +298,8 @@ def createFriendGroup():
     
     query = 'insert into friendgroup values("%s",%s, %s)'
     cursor.execute(query, (groupname,username,description))
+    query = 'insert into belongto values(%s,"%s",%s)'
+    cursor.execute(query,(username,groupname,username))
     cursor.close()
     return render_template("successCreateFG.html")
     
@@ -357,6 +359,7 @@ def manageBlock():
     data=cursor.fetchall()
     cursor.close()
     return render_template("manageBlock.html",persons=data)
+
 @app.route("/commentsForMe")
 def commentsForMe():
     try:
@@ -372,6 +375,7 @@ def commentsForMe():
         return render_template("noComments.html")
     else:
         return render_template("commentsForMe.html",comments=data)
+
 @app.route("/seeComments/<pID>/<filePath>")
 def seeComments(pID,filePath):
     try:
@@ -405,6 +409,7 @@ def bestFollower():
         return render_template("noComments.html")
     else:
         return render_template("bestFollower.html",bestFollower=data)
+
 @app.route("/block")
 def block():
     try:
@@ -544,6 +549,7 @@ def deleteAuth():
     new_query="DELETE FROM photo WHERE poster=%s"
     cursor.execute(new_query, (username))
     data=cursor.fetchall()
+    cursor.close()
     return render_template("index.html")
 
 
@@ -553,7 +559,70 @@ def everyone(name):
     query = "SELECT * FROM fullaccess where poster=%s"
     cursor.execute(query,(name))
     data = cursor.fetchall()
+    cursor.close()
     return render_template("everyone.html",posts = data)
+
+@app.route('/manageGroup')
+def manageGroup():
+    try:
+        username = session['username']
+    except:
+        return render_template('index.html')
+    cursor = conn.cursor()
+    query = "Select groupName,groupCreator,description from FriendGroup natural join BelongTo where username = %s"
+    cursor.execute(query,(username))
+    data = cursor.fetchall()
+    cursor.close()
+    return render_template("manageGroup.html",groups = data)
+
+@app.route('/groupControl/<groupName>/<groupCreator>')
+def groupControl(groupName,groupCreator):
+    username = session['username']
+    cursor=conn.cursor()
+    query = "Drop View IF Exists GroupMembers"
+    cursor.execute(query)
+    query = "Create View GroupMembers As(SELECT username FROM BelongTo where groupName=%s and groupCreator=%s)"
+    cursor.execute(query,(groupName,groupCreator))
+    query = "Select * From GroupMembers"
+    cursor.execute(query)
+    data = cursor.fetchall()
+
+    query = "Drop View IF Exists GroupPics"
+    cursor.execute(query)
+    query = "Create View GroupPics As(select pID from sharedwith where groupName=%s and groupCreator=%s)"
+    cursor.execute(query,(groupName,groupCreator))
+    query = "Select * From GroupPics"
+    cursor.execute(query)
+    data2 = cursor.fetchall()
+
+    query = "select person.username from person left join GroupMembers on person.username = groupmembers.username where groupmembers.username is null"
+    cursor.execute(query)
+    data3 = cursor.fetchall()
+
+    query = "select photo.pid from photo left join GroupPics on photo.pid = grouppics.pid where grouppics.pid is null and poster=%s"
+    cursor.execute(query,(username))
+    data4 = cursor.fetchall()
+
+    cursor.close()
+    return render_template("groupControl.html",persons = data,posts = data2,groupName = groupName,groupCreator = groupCreator,notingroup=data3,notinposts=data4)
+
+@app.route('/addPerson/<groupName>/<groupCreator>')
+def addPerson(groupName,groupCreator):
+    username = request.args["requests"]
+    query = "Insert into belongto values(%s,%s,%s)"
+    cursor = conn.cursor()
+    cursor.execute(query,(username,groupName,groupCreator))
+    cursor.close()
+    return redirect(url_for('manageGroup'))
+
+@app.route('/addPost/<groupName>/<groupCreator>')
+def addPost(groupName,groupCreator):
+    pid = request.args["request"]
+    query = "Insert into sharedwith values(%s,%s,%s)"
+    cursor = conn.cursor()
+    cursor.execute(query,(pid,groupName,groupCreator))
+    cursor.close()
+    return redirect(url_for('manageGroup'))
 
 @app.route('/logout')
 def logout():
