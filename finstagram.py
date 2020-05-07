@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-                       port = 3306,
+                       port = 8889,
                        user='root',
-                       password="",
+                       password="root",
                        db='finstagram',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -287,19 +287,20 @@ def createFriendGroup():
         return render_template('index.html')
     if request.method == 'POST':
         groupname = request.form['group']
+        description = request.form['description']
     cursor = conn.cursor()
     query = 'select groupName,groupCreator From friendgroup where groupName="%s" and groupCreator="%s"'
     cursor.execute(query, (groupname,username))
     data=cursor.fetchall()
     if data:
+        cursor.close()
         return render_template("errorCreateFG.html")
-    else:
-        query = 'insert into friendgroup values("%s","%s","")'
-        cursor.execute(query, (groupname,username))
-        query = 'insert into friendgroup values("%s","%s","%s")'
-        cursor.execute(query,(username,groupname,username))
-        return render_template("successCreateFG.html")
+    
+    query = 'insert into friendgroup values("%s",%s, %s)'
+    cursor.execute(query, (groupname,username,description))
     cursor.close()
+    return render_template("successCreateFG.html")
+    
 
 @app.route("/remove")
 def remove():
