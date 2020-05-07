@@ -395,9 +395,9 @@ def bestFollower():
     cursor=conn.cursor()
     query="DROP VIEW IF EXISTS maxCommentNum"
     cursor.execute(query)
-    query="create view maxCommentNum AS(SELECT username,count(username) AS count FROM reactto join Photo on reactto.pID=photo.pID WHERE photo.poster=%s GROUP BY username)"
+    query="create view maxCommentNum AS(SELECT username,count(*) AS count FROM reactto join Photo using (pID) WHERE photo.poster=%s GROUP BY username)"
     cursor.execute(query,(username))
-    query="SELECT username,max(count) as count from maxcommentnum"
+    query="SELECT username,count as count from maxcommentnum order by count desc"
     cursor.execute(query)
     data=cursor.fetchall()
     cursor.close()
